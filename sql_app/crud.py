@@ -5,18 +5,18 @@ import hashlib, binascii, os
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.sql.functions import mode
 from sqlalchemy import or_
-import helper
 import time
 import json
 
 
 
+import helper
 from . import models, schemas
 
 
 
 def get_videos(db: Session):
-    return db.query(models.Video).all()
+    return db.query(models.Video).order_by(models.Video.published_at.desc()).all()
 
 
 def search_videos(title: str, db: Session):
@@ -36,7 +36,6 @@ def add_video(video: schemas.Video, db: Session):
         medium_thumbnail=video.medium_thumbnail,
         high_thumbnail=video.high_thumbnail,
     )
-    print(db_item.__dict__)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
@@ -45,24 +44,20 @@ def add_video(video: schemas.Video, db: Session):
 
 
 def add_from_yt(db):
-    try:
-        request, response = helper.get_videos()
+    request, response = helper.get_videos()
+    # print(response)
+
+    for obj in response["items"]:
+        video_obj = helper.process_response(obj)
+        add_video(video_obj, db)
+
+    i = 0
+    while True:
+        i = i + 1
+        response = helper.next_response(request, response)
+        print(response)
+        time.sleep(10)
 
         for obj in response["items"]:
             video_obj = helper.process_response(obj)
-            add_video(video_obj, db)
-
-        i = 0
-        while i <= 1:
-            i = i + 1
-            response = helper.next_response(request, response)
-            time.sleep(10)
-
-            for obj in response["items"]:
-                video_obj = helper.process_response(obj)
-                temp = add_video(video_obj, db)
-
-        return {"status": "processing complete"}
-
-    except Exception as e:
-        print(e)
+            temp = add_video(video_obj, db)
