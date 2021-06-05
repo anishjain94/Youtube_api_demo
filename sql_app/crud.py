@@ -53,7 +53,7 @@ def add_from_yt(db):
             add_video(video_obj, db)
 
         i = 0
-        while i <= 0:
+        while i <= 1:
             i = i + 1
             response = helper.next_response(request, response)
             time.sleep(10)
@@ -63,6 +63,6 @@ def add_from_yt(db):
                 temp = add_video(video_obj, db)
 
         return {"status": "processing complete"}
-        
+
     except Exception as e:
         print(e)
