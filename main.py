@@ -40,13 +40,13 @@ def get_home():
     return {"title" : "Hello world"}
 
 
-@app.post("/videos/add")
-async def add_video(start: bool, background_tasks: BackgroundTasks):
-    if start:
-        background_tasks.add_task(add_to_db)
+# @app.post("/videos/add")
+# async def add_video(start: bool, background_tasks: BackgroundTasks):
+#     if start:
+#         background_tasks.add_task(add_to_db)
 
-    return {"status": "processing complete"}
-        # return crud.add_from_yt(db)
+#     return {"status": "processing complete"}
+
 
 
 
@@ -54,7 +54,6 @@ async def add_video(start: bool, background_tasks: BackgroundTasks):
 async def add_to_db():  
     db = SessionLocal()
     try:
-        print(db)
         crud.add_from_yt(db)
     finally:
         db.close()
