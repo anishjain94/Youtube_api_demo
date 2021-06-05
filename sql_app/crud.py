@@ -52,7 +52,7 @@ def add_from_yt(db):
         add_video(video_obj, db)
 
     i = 0
-    while True:
+    while i < 5:
         i = i + 1
         response = helper.next_response(request, response)
         print(response)
